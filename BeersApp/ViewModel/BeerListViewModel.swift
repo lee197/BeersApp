@@ -15,7 +15,7 @@ enum UserAlertError:  String, Error {
 }
 
 class BeerListViewModel {
-    private let apiClient: BeerInfoFetchabe
+    private let apiClient: BeerInfoFetchable
     var showAlertClosure: (()->())?
     var alertMessage: String? {
         didSet {
@@ -24,41 +24,49 @@ class BeerListViewModel {
     }
     private var cellViewModels: [BeerListCellViewModel] = [] {
         didSet {
+            print("sdsdsdsds")
             reloadTableViewClosure?()
         }
     }
     var reloadTableViewClosure: (()->())?
     private var beerTypes = [String]()
     
-    init(apiClient:BeerInfoFetchabe = BeerInfoFetcher()) {
+    init(apiClient:BeerInfoFetchable = BeerInfoFetcher()) {
         self.apiClient = apiClient
     }
     
     func initFetch() {
-        apiClient.fetchCustomerInsterests { [weak self] result in
+        apiClient.fetchBeerTypes { [weak self] result in
             guard let self = self else { return }
             do {
                 let interests = try result.get()
                 self.fetchBeerList(interests)
-                
             } catch {
                 self.alertMessage = UserAlertError.serverError.rawValue
             }
         }
     }
+    func getNumberOfCells() -> Int {
+        return cellViewModels.count
+    }
+    func getCellViewModel( at indexPath: IndexPath ) -> BeerListCellViewModel {
+        return cellViewModels[indexPath.row]
+    }
     
     private func fetchBeerList(_ interests: String) {
         let beerTypeProcessor = BeerTypeProcessor(inputStr: interests)
-        let reqPara = self.createParameters(typeStr: beerTypeProcessor.generateBeerTypes())
-        if reqPara == "No solution exists" {
+        let test = beerTypeProcessor.generateBeerTypes()
+        if test == "No solution exists" {
             self.alertMessage = UserAlertError.interestsConflict.rawValue
+            return
         }
+        let reqPara = self.createParameters(typeStr: test)
         
         self.apiClient.fetchBeerInfo(beerTpes: reqPara) { [weak self] result in
             guard let self = self else { return }
             do {
                 let beerList = try result.get()
-                self.processBeerInfo(beerList)
+                self.processBeerInfoCellVM(beerList)
             } catch {
                 self.alertMessage = UserAlertError.serverError.rawValue
             }
@@ -80,7 +88,7 @@ class BeerListViewModel {
         return parameterStr
     }
     
-    private func processBeerInfo(_ beerList: [BeerModel]) {
+    private func processBeerInfoCellVM(_ beerList: [BeerModel]) {
         var cellViewModels = beerList.map { BeerListCellViewModel(name: $0.name,
                                                                    imageUrl: $0.imageURL,
                                                                    abv: String($0.abv))

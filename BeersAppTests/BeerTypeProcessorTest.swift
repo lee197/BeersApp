@@ -12,7 +12,7 @@ import XCTest
 class BeerTypeProcessorTest: XCTestCase {
     
     func testNoSolution() {
-        let incorrectStr = "1\n1 B\n1 C"
+        let incorrectStr = DataGenerator.finishFetchTypeInfo(.incorrect)
         let beerTypeProcessor = BeerTypeProcessor(inputStr: incorrectStr)
         
         let result = beerTypeProcessor.generateBeerTypes()
@@ -21,7 +21,7 @@ class BeerTypeProcessorTest: XCTestCase {
     }
     
     func testIncompleteTpyes() {
-        let incorrectStr = "2\n1 B\n1 B"
+        let incorrectStr = DataGenerator.finishFetchTypeInfo(.incomplete)
         let beerTypeProcessor = BeerTypeProcessor(inputStr: incorrectStr)
         
         let result = beerTypeProcessor.generateBeerTypes()
@@ -30,7 +30,7 @@ class BeerTypeProcessorTest: XCTestCase {
     }
     
     func testRightSolution() {
-        let correctStr = "5\n2 B\n5 C\n1 C\n5 C 1 C 4 B\n3 C\n5 C\n3 C 5 C 1 C\n3 C\n2 B\n5 C 1 C\n2 B\n5 C\n4 B\n5 C 4 B\n"
+        let correctStr = DataGenerator.finishFetchTypeInfo(.correct)
         let beerTypeProcessor = BeerTypeProcessor(inputStr: correctStr)
         
         let result = beerTypeProcessor.generateBeerTypes()

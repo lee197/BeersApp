@@ -15,9 +15,9 @@ enum APIError: Error {
     case dataDecodingError
 }
 
-protocol BeerInfoFetchabe {
-    func  fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerModel], APIError>) -> Void)
-    func fetchCustomerInsterests(complete completionHandler: @escaping (Result<String, APIError>) -> Void)
+protocol BeerInfoFetchable {
+    func fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerModel], APIError>) -> Void)
+    func fetchBeerTypes(complete completionHandler: @escaping (Result<String, APIError>) -> Void)
 }
 
 struct BeerInfoFetcher {
@@ -28,9 +28,9 @@ struct BeerInfoFetcher {
     }
 }
 
-extension BeerInfoFetcher: BeerInfoFetchabe {
+extension BeerInfoFetcher: BeerInfoFetchable {
     
-    func fetchCustomerInsterests(complete completionHandler: @escaping (Result<String, APIError>) -> Void) {
+    func fetchBeerTypes(complete completionHandler: @escaping (Result<String, APIError>) -> Void) {
         guard let url = makeCustomerInterestComponents().url else {
             let error = APIError.httpError(description: "Couldn't create URL")
             completionHandler(.failure(error))
