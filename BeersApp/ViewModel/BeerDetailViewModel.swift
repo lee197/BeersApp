@@ -7,3 +7,13 @@
 //
 
 import Foundation
+
+class BeerDetailViewModel {
+    private let beerDetailModel: BeerDetailModel
+    
+    init(beerDetailModel: BeerDetailModel) {
+        self.beerDetailModel = beerDetailModel
+    }
+    
+    func getInfo() -> String { return self.beerDetailModel.description }
+}

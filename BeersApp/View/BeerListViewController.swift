@@ -31,8 +31,7 @@ class BeerListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-         initViewModel()
+        initViewModel()
         setupTableView()
     }
     
@@ -50,7 +49,7 @@ class BeerListViewController: UIViewController {
             
             DispatchQueue.main.async {
                 print("ssssss")
-
+                
                 self.tableView.reloadData()
             }
         }
@@ -66,17 +65,16 @@ class BeerListViewController: UIViewController {
     
     private func setupTableView() {
         tableView.dataSource = self
-//        tableView.delegate = self
+        tableView.delegate = self
         tableView.register(BeerListCell.self, forCellReuseIdentifier: "beerCell")
-        tableView.rowHeight = 60
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 600
+        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
 }
 
 extension BeerListViewController: UITableViewDataSource {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return beerListVM.getNumberOfCells()
     }
@@ -85,6 +83,15 @@ extension BeerListViewController: UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "beerCell", for: indexPath) as! BeerListCell
         cell.berrCellViewModel = beerListVM.getCellViewModel(at: indexPath)
         return cell
+    }
+}
+
+extension BeerListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let selectedBeer = beerListVM.userPressedCell(at: indexPath)
+        let vc = BeerDetailViewController(beerDetailViewModel: BeerDetailViewModel(beerDetailModel: selectedBeer))
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
 
