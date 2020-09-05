@@ -8,13 +8,15 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-
+class BeerListViewController: UIViewController {
+    private lazy var beerListVM = {
+        return BeerListViewModel()
+    }()
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        self.view.backgroundColor = .red
+        beerListVM.initFetch()
     }
-
-
 }
 
