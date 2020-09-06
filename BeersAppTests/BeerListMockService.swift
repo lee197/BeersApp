@@ -10,9 +10,9 @@ import Foundation
 @testable import BeersApp
 
 class BeerListMockService {
-    var beerList = [BeerModel]()
+    var beerList = [BeerListModel]()
     var beerTypes = ""
-    var beerListCompletion: ((Result<[BeerModel], APIError>) -> ())!
+    var beerListCompletion: ((Result<[BeerListModel], APIError>) -> ())!
     var beerTypeCompletion: ((Result<String, APIError>) -> ())!
     
     func fetchTypesSuccess() {
@@ -34,7 +34,7 @@ class BeerListMockService {
 
 extension BeerListMockService: BeerInfoFetchable {
     
-    func fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerModel], APIError>) -> Void) {
+    func fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerListModel], APIError>) -> Void) {
         beerListCompletion = completionHandler
     }
     
@@ -51,13 +51,13 @@ class DataGenerator {
         case incorrect
     }
     
-    static func finishFetchBeerInfo() -> [BeerModel] {
+    static func fetchUsefulBeerInfo() -> [BeerListModel] {
         let fileName = "BeerList"
         let path = Bundle.main.path(forResource: fileName, ofType: "json")!
         let data = try! Data(contentsOf: URL(fileURLWithPath: path))
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        let beers = try! decoder.decode([BeerModel].self, from: data)
+        let beers = try! decoder.decode([BeerListModel].self, from: data)
         return beers
     }
     

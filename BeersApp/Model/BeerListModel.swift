@@ -9,7 +9,7 @@
 import Foundation
 
 // MARK: - BeerModelElement
-struct BeerModel: Codable {
+struct BeerListModel: Codable {
     let id: Int
     let name, tagline, firstBrewed, beerModelDescription: String
     let imageURL: String

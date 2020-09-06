@@ -10,64 +10,75 @@ import XCTest
 @testable import BeersApp
 
 class BeerListViewModelTest: XCTestCase {
-    var viewModel: BeerListViewModel!
+    var sut: BeerListViewModel!
     fileprivate var mockingFetchingService: BeerListMockService!
     
     override func setUp() {
         self.mockingFetchingService = BeerListMockService()
-        self.viewModel = BeerListViewModel(apiClient: mockingFetchingService)
+        self.sut = BeerListViewModel(apiClient: mockingFetchingService)
     }
-
+    
     override func tearDown() {
         self.mockingFetchingService = nil
-        self.viewModel = nil
+        self.sut = nil
     }
     
     func testFetchBeerTypesAndListSuccess() {
-        mockingFetchingService.beerTypes = DataGenerator.finishFetchTypeInfo(.correct)
-        let beerList = DataGenerator.finishFetchBeerInfo()
-        mockingFetchingService.beerList = beerList
-            
+        let beerList = fetchFinished()
         let index = IndexPath(row: 0, section: 0)
         
-        viewModel.initFetch()
-        mockingFetchingService.fetchTypesSuccess()
-        mockingFetchingService.fetchListSuccess()
-        
-        XCTAssertEqual(viewModel.getCellViewModel(at: index).name, beerList[0].name)
+        XCTAssertEqual(sut.getCellViewModel(at: index).name, beerList[0].name)
     }
     
     func testFetchBeerTypesFailed() {
         let userError = UserAlertError.serverError
         let error = APIError.dataDecodingError
         
-        viewModel.initFetch()
+        sut.initFetch()
         mockingFetchingService.fetchBeerTypeFail(error: error)
         
-        XCTAssertEqual(viewModel.alertMessage, userError.rawValue)
+        XCTAssertEqual(sut.alertMessage, userError.rawValue)
     }
     
     func testFetchBeerListFailed() {
         mockingFetchingService.beerTypes = DataGenerator.finishFetchTypeInfo(.correct)
-
+        
         let userError = UserAlertError.serverError
         let error = APIError.dataDecodingError
         
-        viewModel.initFetch()
+        sut.initFetch()
         mockingFetchingService.fetchTypesSuccess()
         mockingFetchingService.fetchBeerListFail(error: error)
         
-        XCTAssertEqual(viewModel.alertMessage, userError.rawValue)
+        XCTAssertEqual(sut.alertMessage, userError.rawValue)
     }
     
     func testNoSolution() {
         mockingFetchingService.beerTypes = DataGenerator.finishFetchTypeInfo(.incorrect)
         let userError = UserAlertError.interestsConflict
-        viewModel.initFetch()
+        sut.initFetch()
         mockingFetchingService.fetchTypesSuccess()
-
-        XCTAssertEqual(viewModel.alertMessage, userError.rawValue)
-    }    
+        
+        XCTAssertEqual(sut.alertMessage, userError.rawValue)
+    }
+    
+    func testUserPressedCell() {
+        let beerList = fetchFinished()
+        let index = IndexPath(row: 0, section: 0)
+        
+        XCTAssertEqual(sut.userPressedCell(at: index).beerIntroModel.name, beerList[index.row].name)
+        XCTAssertEqual(sut.userPressedCell(at: index).beerProcessList.count , 3 )
+    }
+    
+    func fetchFinished() -> [BeerListModel] {
+        mockingFetchingService.beerTypes = DataGenerator.finishFetchTypeInfo(.correct)
+        let beerList = DataGenerator.fetchUsefulBeerInfo()
+        mockingFetchingService.beerList = beerList
+        sut.initFetch()
+        mockingFetchingService.fetchTypesSuccess()
+        mockingFetchingService.fetchListSuccess()
+        return beerList
+    }
 }
 
 

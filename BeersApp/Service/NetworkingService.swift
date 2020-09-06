@@ -16,7 +16,7 @@ enum APIError: Error {
 }
 
 protocol BeerInfoFetchable {
-    func fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerModel], APIError>) -> Void)
+    func fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerListModel], APIError>) -> Void)
     func fetchBeerTypes(complete completionHandler: @escaping (Result<String, APIError>) -> Void)
 }
 
@@ -61,7 +61,7 @@ extension BeerInfoFetcher: BeerInfoFetchable {
         }.resume()
     }
     
-    func fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerModel], APIError>) -> Void) {
+    func fetchBeerInfo(beerTpes: String, complete completionHandler: @escaping (Result<[BeerListModel], APIError>) -> Void) {
         guard let url = makeBeerInfoComponents(withBeerTypes: beerTpes).url else {
             let error = APIError.httpError(description: "Couldn't create URL")
             completionHandler(.failure(error))
@@ -86,7 +86,7 @@ extension BeerInfoFetcher: BeerInfoFetchable {
             
             let decoder = JSONDecoder()
             do{
-                let value = try decoder.decode([BeerModel].self, from: data)
+                let value = try decoder.decode([BeerListModel].self, from: data)
                 completionHandler(.success(value))
             }catch{
                 completionHandler(.failure(.dataDecodingError))

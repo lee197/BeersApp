@@ -29,7 +29,7 @@ class BeerListViewModel {
     }
     var reloadTableViewClosure: (()->())?
     private var beerTypes = [String]()
-    private var beerList = [BeerModel]()
+    private var beerList = [BeerListModel]()
     
     init(apiClient:BeerInfoFetchable = BeerInfoFetcher()) {
         self.apiClient = apiClient
@@ -100,20 +100,30 @@ class BeerListViewModel {
         
         self.cellViewModels = cellViewModels
     }
+    
+    private func processBeerDetails(_ beerDetailModel: BeerListModel) -> [BeerProcessModel] {
+        var beerProcessList =  [BeerProcessModel]()
+        var ingredientHopList = [IngredientModel]()
+        beerDetailModel.ingredients.hops.forEach { ingredientHopList.append(IngredientModel(ingredientTitle: $0.name,detail: String($0.amount.value) + " " + $0.amount.unit)) }
+        beerProcessList.append(BeerProcessModel(processTitle: "Hops", items: ingredientHopList))
+        
+        var ingredientMaltList = [IngredientModel]()
+        beerDetailModel.ingredients.malt.forEach { ingredientMaltList.append(IngredientModel(ingredientTitle: $0.name,detail: String($0.amount.value) + " " + $0.amount.unit)) }
+        beerProcessList.append(BeerProcessModel(processTitle: "Malts", items: ingredientMaltList))
+        
+        var ingredientMethodList = [IngredientModel]()
+        beerDetailModel.method.mashTemp.forEach { ingredientMethodList.append(IngredientModel(ingredientTitle: String($0.temp.value) + " " + $0.temp.unit, detail: String($0.duration ?? 0) + " degress" )) }
+        beerProcessList.append(BeerProcessModel(processTitle: "Method", items: ingredientMethodList))
+        
+        return beerProcessList
+    }
 }
 
 extension BeerListViewModel {
-    // output
     func userPressedCell(at index: IndexPath) -> BeerDetailModel {
         let beerInfo = self.beerList[index.row]
-        let beerDetailModel = BeerDetailModel(name: beerInfo.name,
-                                              imageUrl: beerInfo.imageURL,
-                                              abv: String(beerInfo.abv),
-                                              description: beerInfo.beerModelDescription,
-                                              hops: beerInfo.ingredients.hops,
-                                              malts: beerInfo.ingredients.malt,
-                                              method: beerInfo.method)
-        return beerDetailModel
+        let beerIntroModel = BeerIntroModel(name: beerInfo.name, description: beerInfo.beerModelDescription, abv: String(beerInfo.abv), imageUrl: beerInfo.imageURL)
+        return BeerDetailModel(beerIntroModel: beerIntroModel, beerProcessList: processBeerDetails(beerInfo))
     }
 }
 
@@ -122,11 +132,4 @@ struct BeerListCellViewModel {
     let imageUrl: String
     let abv: String
     var type = "Classic"
-}
-
-struct BeerDetailModel {
-    let name, imageUrl, abv, description: String
-    let hops: [Hop]
-    let malts: [Malt]
-    let method: Method
 }

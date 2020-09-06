@@ -9,7 +9,7 @@
 import UIKit
 
 class BeerIntroCell: UITableViewCell {
-    var beerIntroCellVM: BeerIntroCellViewModel? {
+    var beerIntroCellVM: BeerIntroModel? {
         didSet {
             self.titleLabel.text = beerIntroCellVM?.name
             self.descriptionLabel.text = beerIntroCellVM?.description
