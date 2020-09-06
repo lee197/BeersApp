@@ -69,7 +69,6 @@ class BeerListViewController: UIViewController {
         tableView.register(BeerListCell.self, forCellReuseIdentifier: "beerCell")
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 600
-        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
 }
 
